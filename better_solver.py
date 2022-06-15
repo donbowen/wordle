@@ -26,9 +26,9 @@ def filter_with_info(exact='-----',yellow='',black='',df=words):
 
     RETURNS LIST OF WORDS THAT STILL WORK
     '''
-    
+        
     if type(df) == list:
-        df = pd.DataFrame(remaining,columns=['whole_word'])
+        df = pd.DataFrame(df,columns=['whole_word'])
         df[["pos1", "pos2", "pos3", "pos4", "pos5"]] = df["whole_word"].str.split(
             "", expand=True
         )[[1, 2, 3, 4, 5]]
@@ -247,7 +247,49 @@ def cheat(green='',yellow=[],black='',df=words):
               [whole_word, pos1, ... pos5]
     '''
     return guess_outcomes(filter_with_info(green,yellow,black,df))
-
-info_set = cheat('--ink',[],'st')
-
     
+class Wordle:
+    # black
+    # green
+    # yellow
+    
+    def __init__(self):
+        self.black = ''
+        self.green = '-----'
+        self.yellow = []
+        self.words = words.whole_word.to_list()
+       
+    def guess(self,guess,colors):
+        assert len(guess) == 5,  "Guess must be 5 letters"
+        assert len(colors) == 5, "Colors of guess must be 5 letters"
+        assert set(colors) <= {'y','b','g'}, 'Colors can only be "y" (yellow), "g" (green), or "b" (black)'       
+        def replace_let(s,let,index):
+            'Returns string "s" with letter "let" in index position'
+            return s[:index] + let + s[index + 1:]
+
+        # update info space
+        for spot, (l, c) in enumerate(zip(guess,colors)):
+            if c == 'b':
+                self.black += l
+            elif c == 'g':
+                self.green = replace_let(self.green,l,spot)     
+            elif c == 'y':
+                self.yellow.append((l,spot+1)) 
+        
+        # filter to remaining options
+        self.words = filter_with_info(self.green,
+                                      self.yellow,
+                                      self.black,
+                                      self.words)
+        
+        # what should we guess?
+        assert len(self.words) > 0, "No words are possible because colors in your guesses give conflicting info."
+        self.what_next = guess_outcomes(self.words)
+        
+        
+game = Wordle()        
+game.guess('radon','ybbyb')
+game.guess('power','gybby')
+game.guess('primo','ggggg')
+info_set = game.what_next      
+
