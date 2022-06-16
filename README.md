@@ -1,6 +1,8 @@
 # Some silly wordle analyis
 
-Sorry: It's poorly commented code. 
+- `wordle.ipynb` is some exploratory code that produced this analysis
+- `wordle.py` makes it easy to see available guess options and what you'll learn from guessing them. Doing so is cheating, obviously, but it's useful to learn about how good your guesses are. There is a nice way to evaluate your guesses too.
+- `wordle.csv` is the list of possible answers to the game
 
 ## First word choice
 
