@@ -185,47 +185,77 @@ class Wordle:
         else:
             guess_list=self.guess_options_all
     
-        # keep a count of # times that guess yields each of possible sets 
-        # note: sum this count for a given guess = # of possible words remaining
+        # # keep a count of # times that guess yields each of possible sets 
+        # # note: sum this count for a given guess = # of possible words remaining
     
-        guess_set_count    = defaultdict(int) 
+        # guess_set_count    = defaultdict(int) 
     
-        # get possible info sets from all potential next guesses
-        # if we were going to simulate millions of games and guesses, 
-        # could pre-compile a {(guess,answer):info_set} dictionary and just 
-        # do look ups here. but not worth it.
+        # # get possible info sets from all potential next guesses
+        # # if we were going to simulate millions of games and guesses, 
+        # # could pre-compile a {(guess,answer):info_set} dictionary and just 
+        # # do look ups here. but not worth it.
     
-        for guess in guess_list:    
+        # for guess in guess_list:    
                     
-            for answer in self.remaining_answers:
+        #     for answer in self.remaining_answers:
                     
-                # get info set this guess would get for the given answer
+        #         # get info set this guess would get for the given answer
                 
-                black = ''.join([e for e in set(guess) if e not in set(answer)])
-                black = ''.join(sorted(black)) # only membership matters, sort so 'ab' and 'ba' are equiv
-                green = ''.join([guess[i] if guess[i] == answer[i] else '-' for i in range(5)])
-                yellow = ()
-                for idx,let in enumerate(guess):
-                    # acct for cases when you guess a letter multiple times
-                    # wordle will asgn yellow to first instance of it left to 
-                    # right, such that yellow+green<=the # of times it is in 
-                    # the answer
-                    supply_tot = answer.count(let)
-                    supply_left = supply_tot - green.count(let) - len([i for (i, j) in yellow if i==let])
-                    if let in answer and not let == answer[idx] and supply_left > 0:
-                        new_yellow = (let,idx+1)
-                        yellow += (new_yellow,)
+        #         black = ''.join([e for e in set(guess) if e not in set(answer)])
+        #         black = ''.join(sorted(black)) # only membership matters, sort so 'ab' and 'ba' are equiv
+        #         green = ''.join([guess[i] if guess[i] == answer[i] else '-' for i in range(5)])
+        #         yellow = ()
+        #         for idx,let in enumerate(guess):
+        #             # acct for cases when you guess a letter multiple times
+        #             # wordle will asgn yellow to first instance of it left to 
+        #             # right, such that yellow+green<=the # of times it is in 
+        #             # the answer
+        #             supply_tot = answer.count(let)
+        #             supply_left = supply_tot - green.count(let) - len([i for (i, j) in yellow if i==let])
+        #             if let in answer and not let == answer[idx] and supply_left > 0:
+        #                 new_yellow = (let,idx+1)
+        #                 yellow += (new_yellow,)
                 
-                # TODO? - this doesn't track count info - when a guess has 
-                # repeat letters, if guess.count(let)>answer.count(let), that 
-                # let is in there answer.count(let) times and the wordle colors
-                # reveal that. If <=, all have colors and we learn the letter
-                # is in there at least guess.count(let) times. 
+        #         # TODO? - this doesn't track count info - when a guess has 
+        #         # repeat letters, if guess.count(let)>answer.count(let), that 
+        #         # let is in there answer.count(let) times and the wordle colors
+        #         # reveal that. If <=, all have colors and we learn the letter
+        #         # is in there at least guess.count(let) times. 
                                 
-                # add info set to tracking objects         
+        #         # add info set to tracking objects         
                 
-                guess_set_count[(guess,(black,green,yellow))] += 1
+        #         guess_set_count[(guess,(black,green,yellow))] += 1
                       
+        def compute_info_set_vectorized(guesses, answers):
+            black = []
+            green = []
+            yellow = []
+
+            for guess in guesses:
+                for ans in answers:
+                    black.append(''.join(sorted(set(guess) - set(ans))))
+                    green.append(''.join([g if g == a else '-' for g, a in zip(guess, ans)]))
+                    yellow_ans = []
+                    for idx, let in enumerate(guess):
+                        if let in ans and guess[idx] != ans[idx]:
+                            yellow_ans.append((let, idx+1))
+                    yellow.append(tuple(yellow_ans))
+                    
+            return black, green, yellow
+
+        def build_dictionary_vectorized(guess_list, remaining_answers):
+            guess_set_count = defaultdict(int)
+
+            black, green, yellow = compute_info_set_vectorized(guess_list, remaining_answers)
+            print(len(yellow))
+            for i, guess in enumerate(guess_list):
+                for j, answer in enumerate(remaining_answers):
+                    info_set = (black[i*len(remaining_answers)+j], green[i*len(remaining_answers)+j], yellow[i*len(remaining_answers)+j])
+                    guess_set_count[(guess, info_set)] += 1
+
+            return guess_set_count
+    
+        guess_set_count = build_dictionary_vectorized(guess_list, self.remaining_answers)
     
         # output the info we want (some annoying formatting to handle)
         
