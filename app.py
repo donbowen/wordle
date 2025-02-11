@@ -26,11 +26,14 @@ def play_wordle():
         st.write("Possible answers after removing prior answers:",len(game_state['game'].remaining_answers))
     '''
     ---
+
+    Valid colors are b for black, g for green, and y for yellow.
     '''            
-    st.write('Guess a 5-letter word and the colors (e.g. "apple, bbbbb"):')
+    st.write('Guess a 5-letter word and the colors (e.g. "apple, bbbbb", but without the quotes):')
     guess_input = st.text_input('Enter your guess and colors:')
     if st.button('Submit'):
-        guess, colors = guess_input.split(', ')         # parse guess
+        guess, colors = guess_input.split(',')          # parse guess
+        guess, colors = guess.strip(), colors.strip()   # clean 
         game_state['game'].guess(guess, colors)         # make the guess
         game_state['guesses'].append((guess, colors))   # track guesses
         info_set = game_state['game'].what_next         # get info about possible guesses
