@@ -2,7 +2,7 @@
 
 A wordle cheat. Especially the app.py streamlit app.
 
-[You can see this app in action here!]())
+[You can see this app in action here!](https://wordle-cheater-db.streamlit.app/)
 
 ## How to - streamlit
 
