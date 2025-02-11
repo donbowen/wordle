@@ -17,13 +17,14 @@ def play_wordle():
     else:
         game_state['game'].guess_mode = 'all'
 
-    prev_ans_mode = st.radio('Remove previous answers from pool? (extra-cheaty)', ['No','Yes'], index=0)
-    if prev_ans_mode == 'Yes':
-        st.write('Note: The prior answers dataset is often outdated')
-        st.write('Note: NYT might repeat words')
-        st.write("Possible answers before removing prior answers:",len(game_state['game'].remaining_answers))
-        game_state['game'].remove_previous_answers()
-        st.write("Possible answers after removing prior answers:",len(game_state['game'].remaining_answers))
+    prev_ans_mode = 'No'
+    # prev_ans_mode = st.radio('Remove previous answers from pool? (extra-cheaty)', ['No','Yes'], index=0)
+    # if prev_ans_mode == 'Yes':
+    #     st.write('Note: The prior answers dataset is often outdated')
+    #     st.write('Note: NYT might repeat words')
+    #     st.write("Possible answers before removing prior answers:",len(game_state['game'].remaining_answers))
+    #     game_state['game'].remove_previous_answers()
+    #     st.write("Possible answers after removing prior answers:",len(game_state['game'].remaining_answers))
     '''
     ---
 

@@ -424,12 +424,16 @@ def game_score(answer,guesses):
         
 # Let's play!
 
-# game = Wordle()        
-# game.guess('smile','bbbbb')
-# info_set = game.what_next
-# info_set.set_index('guess').loc[['pouty','proud','grant','pound','hound'],'avg_remaining']
-# game.guess('grant','byyyb')
-# game.golf_score
+if __name__ == "__main__":
+    game = Wordle()  
+    print(game.guess_outcomes())  # starting words, ranked
+
+    # game.guess('smile','bbbbb')
+    # info_set = game.what_next
+    # print(info_set)
+    # info_set.set_index('guess').loc[['pouty','proud','grant','pound','hound'],'avg_remaining']
+    # game.guess('grant','byyyb')
+    # print(game.golf_score)
 
 # game_score('apron',['smile','pouty','whoop','apron'])         # 7.15 - Don
 # game_score('apron',['smile','proud','apron'])                 # 5.44 - Nick
